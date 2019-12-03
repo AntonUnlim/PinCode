@@ -5,32 +5,30 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RadialGradient;
+import android.graphics.Shader;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
 @SuppressLint("AppCompatCustomView")
-public class CircleButton extends ImageView {
+public class CircleButton extends TextView {
 
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private int size = 200;
+    private final int SIZE = 100;
     private String number = "";
     private String letters = "";
-    private int numberFontSize = 110;
-    private int lettersFontSize = 40;
-    private float radius = 100;
-    private float borderWidth = 3;
+    private final float RADIUS = 50;
+    private final float BORDER_WIDTH = 3;
     private int fillColor = Color.TRANSPARENT;
 
     public CircleButton(Context context) {
         super(context);
     }
-
     public CircleButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
-
     public CircleButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
@@ -38,30 +36,19 @@ public class CircleButton extends ImageView {
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(size, size);
+        setMeasuredDimension(SIZE, SIZE);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        // draw circle
-        paint.setColor(fillColor);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(radius, radius, radius, paint);
-
-        paint.setColor(Color.BLACK);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(borderWidth);
-        canvas.drawCircle(radius, radius, radius - borderWidth / 2f, paint);
-
-        // draw text
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(numberFontSize);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawText(number, 100,100, paint);
-
-        paint.setTextSize(lettersFontSize);
-        canvas.drawText(letters, 100, 150, paint);
+        setPaintFill();
+        canvas.drawCircle(RADIUS, RADIUS, RADIUS, paint);
+        setPaintStroke();
+        canvas.drawCircle(RADIUS, RADIUS, RADIUS - BORDER_WIDTH / 2f, paint);
+        setPaintNumberText();
+        canvas.drawText(number, 50,55, paint);
+        setPaintLettersText();
+        canvas.drawText(letters, 50, 80, paint);
     }
 
     public void pressed(boolean press) {
@@ -70,6 +57,32 @@ public class CircleButton extends ImageView {
         } else {
             drawEmptyCircle();
         }
+    }
+
+    private void setPaintFill() {
+        paint.setColor(fillColor);
+        paint.setShader(new RadialGradient(getWidth()/2, getHeight()/2, RADIUS, Color.BLACK, Color.TRANSPARENT, Shader.TileMode.MIRROR));
+    }
+
+    private void setPaintStroke() {
+        paint.setShader(null);
+        paint.setColor(Color.BLACK);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(BORDER_WIDTH);
+
+    }
+
+    private void setPaintNumberText() {
+        paint.setColor(Color.BLACK);
+        int numberFontSize = 60;
+        paint.setTextSize(numberFontSize);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setStyle(Paint.Style.FILL);
+    }
+
+    private void setPaintLettersText() {
+        int lettersFontSize = 20;
+        paint.setTextSize(lettersFontSize);
     }
 
     private void drawEmptyCircle() {
@@ -88,7 +101,7 @@ public class CircleButton extends ImageView {
     }
 
     public void setLetters(String letters) {
-        this.letters = letters.toUpperCase();
+        this.letters = letters;
         invalidate();
     }
 

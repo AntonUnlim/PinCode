@@ -1,7 +1,5 @@
 package com.unlim.pincode;
 
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,7 +14,8 @@ import androidx.annotation.Nullable;
 public class MyCircle extends ImageView {
 
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private int size = 100;
+    private final int SIZE = 26;
+    private final float RADIUS = 13;
     private boolean isOn = false;
 
     public MyCircle(Context context) {
@@ -34,21 +33,26 @@ public class MyCircle extends ImageView {
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(size, size);
+        setMeasuredDimension(SIZE, SIZE);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        setPaintFill();
+        canvas.drawCircle(13, 13, RADIUS, paint);
+        setPaintStroke();
+        canvas.drawCircle(13, 13, RADIUS - 2 / 2f, paint);
+    }
 
+    private void setPaintFill() {
         paint.setColor((isOn)?Color.BLUE:Color.BLACK);
         paint.setStyle(Paint.Style.FILL);
-        float radius = 50;
-        canvas.drawCircle(50, 50, radius, paint);
+    }
+
+    private void setPaintStroke() {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(3);
-        canvas.drawCircle(50, 50, radius - 3 / 2f, paint);
+        paint.setStrokeWidth(2);
     }
 
     public void setOn (boolean isOn) {
