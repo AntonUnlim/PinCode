@@ -1,12 +1,11 @@
 package com.unlim.pincode;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RadialGradient;
-import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -16,23 +15,34 @@ import androidx.annotation.Nullable;
 public class CircleButton extends TextView {
 
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final int SIZE = 100;
+    private final static int SIZE = 100;
     private String number = "";
     private String letters = "";
-    private final float RADIUS = 50;
-    private final float BORDER_WIDTH = 3;
-    private int fillColor = Color.TRANSPARENT;
+    private MyDrawable myDrawable = new MyDrawable();
+    private final static int NUMBER_TEXT_X = 50, NUMBER_TEXT_Y = 55, LETTERS_TEXT_X = 50, LETTERS_TEXT_Y = 80;
+    private ObjectAnimator animatorGrow, animatorShrink;
 
     public CircleButton(Context context) {
         super(context);
+        init();
     }
     public CircleButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
     public CircleButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
+    private void init() {
+        animatorGrow = ObjectAnimator.ofFloat(this, "radius", 0, SIZE / 2);
+        animatorGrow.setDuration(500);
+        animatorShrink = ObjectAnimator.ofFloat(this, "radius", SIZE / 2, 0);
+        animatorShrink.setDuration(500);
+    }
+
+    @SuppressLint("DrawAllocation")
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -41,35 +51,15 @@ public class CircleButton extends TextView {
 
     @Override
     public void onDraw(Canvas canvas) {
-        setPaintFill();
-        canvas.drawCircle(RADIUS, RADIUS, RADIUS, paint);
-        setPaintStroke();
-        canvas.drawCircle(RADIUS, RADIUS, RADIUS - BORDER_WIDTH / 2f, paint);
-        setPaintNumberText();
-        canvas.drawText(number, 50,55, paint);
-        setPaintLettersText();
-        canvas.drawText(letters, 50, 80, paint);
-    }
-
-    public void pressed(boolean press) {
-        if (press) {
-            drawFilledCircle();
-        } else {
-            drawEmptyCircle();
-        }
-    }
-
-    private void setPaintFill() {
-        paint.setColor(fillColor);
-        paint.setShader(new RadialGradient(getWidth()/2, getHeight()/2, RADIUS, Color.BLACK, Color.TRANSPARENT, Shader.TileMode.MIRROR));
-    }
-
-    private void setPaintStroke() {
-        paint.setShader(null);
-        paint.setColor(Color.BLACK);
+        myDrawable.draw(canvas);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(BORDER_WIDTH);
-
+        paint.setStrokeWidth(1);
+        paint.setColor(Color.BLACK);
+        canvas.drawCircle(SIZE/2, SIZE/2, SIZE/2, paint);
+        setPaintNumberText();
+        canvas.drawText(number, NUMBER_TEXT_X,NUMBER_TEXT_Y, paint);
+        setPaintLettersText();
+        canvas.drawText(letters, LETTERS_TEXT_X, LETTERS_TEXT_Y, paint);
     }
 
     private void setPaintNumberText() {
@@ -83,16 +73,6 @@ public class CircleButton extends TextView {
     private void setPaintLettersText() {
         int lettersFontSize = 20;
         paint.setTextSize(lettersFontSize);
-    }
-
-    private void drawEmptyCircle() {
-        fillColor = Color.TRANSPARENT;
-        invalidate();
-    }
-
-    private void drawFilledCircle() {
-        fillColor = Color.BLUE;
-        invalidate();
     }
 
     public void setNumber(String number) {
@@ -109,5 +89,24 @@ public class CircleButton extends TextView {
     public boolean performClick() {
         super.performClick();
         return true;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        myDrawable.setBounds(0, 0, w, h);
+    }
+
+    public void setRadius(float radius) {
+        myDrawable.setRadius(radius);
+        invalidate();
+    }
+
+    public void startAnimationGrow() {
+        animatorGrow.start();
+    }
+
+    public void startAnimationShrink() {
+        animatorShrink.start();
     }
 }

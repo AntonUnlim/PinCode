@@ -2,24 +2,18 @@ package com.unlim.pincode;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final int AMN = 4;
-    private final String passCode = "9510";
+    private final static int AMN = 4;
+    private final static String PASS_CODE = "9510";
     private LinearLayout linearLayout;
     private String enteredCode = "";
     private int currentSymbol = 0;
@@ -35,7 +29,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btnClickDelete(View view) {
-        clearCode();
+        clearCodeSymbol();
+    }
+
+    private void clearCodeSymbol() {
+        if(currentSymbol > 0) {
+            myAdapter.switchOff(linearLayout, currentSymbol - 1);
+            int len = enteredCode.length() - 1;
+            enteredCode = enteredCode.substring(0, len);
+            currentSymbol = currentSymbol - 1;
+        }
     }
 
     private void clearCode() {
@@ -48,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         TableLayout tableLayout = findViewById(R.id.table);
         tableLayout.setStretchAllColumns(true);
         tableLayout.setShrinkAllColumns(true);
-        tableLayout.setBackgroundColor(Color.LTGRAY);
         myAdapter.fillKeyboard(tableLayout);
     }
 
@@ -59,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
             currentSymbol++;
         }
         if (currentSymbol == AMN) {
-            if (enteredCode.equals(passCode)) {
-                clearCode();
+            if (enteredCode.equals(PASS_CODE)) {
+                clearCodeSymbol();
                 Intent intent = new Intent(this, NewActivity.class);
                 startActivity(intent);
             } else {
-                //Toast.makeText(this, "Error!", Toast.LENGTH_SHORT).show();
-                myAdapter.animateErrorCode(linearLayout);
+                Animation animation = AnimationUtils.loadAnimation(this, R.anim.move);
+                linearLayout.startAnimation(animation);
                 clearCode();
             }
         }

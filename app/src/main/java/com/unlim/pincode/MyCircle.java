@@ -45,7 +45,7 @@ public class MyCircle extends ImageView {
     }
 
     private void setPaintFill() {
-        paint.setColor((isOn)?Color.BLUE:Color.BLACK);
+        paint.setColor((isOn)?Color.BLACK:Color.TRANSPARENT);
         paint.setStyle(Paint.Style.FILL);
     }
 
