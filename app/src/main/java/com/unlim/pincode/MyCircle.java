@@ -14,18 +14,18 @@ import androidx.annotation.Nullable;
 public class MyCircle extends ImageView {
 
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final int SIZE = 26;
-    private final float RADIUS = 13;
+    private final static int SIZE = 26;
+    private final static float RADIUS = 13;
+    private final static int POSITION = 13;
     private boolean isOn = false;
+    private final static int STROKE_WIDTH = 2;
 
     public MyCircle(Context context) {
         super(context);
     }
-
     public MyCircle(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
-
     public MyCircle(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
@@ -39,25 +39,24 @@ public class MyCircle extends ImageView {
     @Override
     public void onDraw(Canvas canvas) {
         setPaintFill();
-        canvas.drawCircle(13, 13, RADIUS, paint);
+        canvas.drawCircle(POSITION, POSITION, RADIUS, paint);
         setPaintStroke();
-        canvas.drawCircle(13, 13, RADIUS - 2 / 2f, paint);
+        canvas.drawCircle(POSITION, POSITION, RADIUS - 2 / 2f, paint);
     }
 
     private void setPaintFill() {
-        paint.setColor((isOn)?Color.BLACK:Color.TRANSPARENT);
+        paint.setColor((isOn) ? Color.BLACK : Color.TRANSPARENT);
         paint.setStyle(Paint.Style.FILL);
     }
 
     private void setPaintStroke() {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(2);
+        paint.setStrokeWidth(STROKE_WIDTH);
     }
 
-    public void setOn (boolean isOn) {
+    public void setOn(boolean isOn) {
         this.isOn = isOn;
         invalidate();
     }
-
 }

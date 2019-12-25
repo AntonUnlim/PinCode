@@ -9,7 +9,8 @@ import android.graphics.drawable.GradientDrawable;
 public class MyDrawable extends GradientDrawable {
 
     private Paint paint = new Paint();
-    private int width, height;
+    private int width;
+    private int height;
     private float radius;
 
     @Override

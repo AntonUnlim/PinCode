@@ -2,7 +2,6 @@ package com.unlim.pincode;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -10,41 +9,39 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
+import com.unlim.pincode.Adapter.MyAdapter;
+
 public class MainActivity extends AppCompatActivity {
 
-    private final static int AMN = 4;
-    private final static String PASS_CODE = "9510";
+    private MyPresenter myPresenter;
     private LinearLayout linearLayout;
-    private String enteredCode = "";
-    private int currentSymbol = 0;
     private MyAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        myAdapter = new MyAdapter(this, AMN);
+        myPresenter = new MyPresenter(this);
+        myAdapter = new MyAdapter(this, MyPresenter.SYMBOLS_AMN);
         fillCodeCircles();
         fillKeyboard();
     }
 
     public void btnClickDelete(View view) {
-        clearCodeSymbol();
+        myPresenter.onDeleteCodeSymbol();
     }
 
-    private void clearCodeSymbol() {
-        if(currentSymbol > 0) {
-            myAdapter.switchOff(linearLayout, currentSymbol - 1);
-            int len = enteredCode.length() - 1;
-            enteredCode = enteredCode.substring(0, len);
-            currentSymbol = currentSymbol - 1;
-        }
+    public void switchOffCodeSymbol(int id) {
+        myAdapter.switchOffCircle(linearLayout, id - 1);
+    }
+
+    public void switchOnCodeSymbol(int id) {
+        myAdapter.switchOnCircle(linearLayout, id);
     }
 
     private void clearCode() {
         myAdapter.clearCodeLine(linearLayout);
-        enteredCode = "";
-        currentSymbol = 0;
+        myPresenter.clearCode();
     }
 
     private void fillKeyboard() {
@@ -55,22 +52,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getClickedNumber(int number) {
-        if (currentSymbol < AMN) {
-            enteredCode += String.valueOf(number);
-            ((MyCircle) linearLayout.getChildAt(currentSymbol)).setOn(true);
-            currentSymbol++;
-        }
-        if (currentSymbol == AMN) {
-            if (enteredCode.equals(PASS_CODE)) {
-                clearCodeSymbol();
-                Intent intent = new Intent(this, NewActivity.class);
-                startActivity(intent);
-            } else {
-                Animation animation = AnimationUtils.loadAnimation(this, R.anim.move);
-                linearLayout.startAnimation(animation);
-                clearCode();
-            }
-        }
+        myPresenter.getClickedNumber(number);
     }
 
     private void fillCodeCircles() {
@@ -78,4 +60,9 @@ public class MainActivity extends AppCompatActivity {
         myAdapter.fillCodeLine(linearLayout);
     }
 
+    public void errAnimation() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.move);
+        linearLayout.startAnimation(animation);
+        clearCode();
+    }
 }
